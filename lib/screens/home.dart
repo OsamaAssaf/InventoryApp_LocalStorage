@@ -1,13 +1,14 @@
 import 'dart:convert';
 
-import 'package:intl/intl.dart';
-
 import 'package:flutter/material.dart';
-import 'package:inventoryapp/controllers/database_controller.dart';
-import 'package:inventoryapp/controllers/theme_controller.dart';
+
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:inventoryapp/modules/item.dart';
-import 'package:inventoryapp/screens/add_item.dart';
+
+import 'package:inventory_app/controllers/database_controller.dart';
+import 'package:inventory_app/controllers/theme_controller.dart';
+import 'package:inventory_app/models/item.dart';
+import 'package:inventory_app/screens/add_item.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -23,8 +24,7 @@ class _HomeState extends State<Home> {
 
   String? currency() {
     Locale locale = Localizations.localeOf(context);
-    NumberFormat format =
-        NumberFormat.simpleCurrency(locale: locale.toString());
+    NumberFormat format = NumberFormat.simpleCurrency(locale: locale.toString());
     return format.currencyName;
   }
 
@@ -34,7 +34,6 @@ class _HomeState extends State<Home> {
     context.read<DBController>().getItems(category);
     context.read<ThemeController>().getTheme();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -61,15 +60,19 @@ class _HomeState extends State<Home> {
                 dropdownColor: Colors.grey,
                 value: category,
                 items: categoryList
-                    .map((value) => DropdownMenuItem<String>(
-                          child: Text(value,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.normal,
-                              )),
-                          value: value,
-                        ))
+                    .map(
+                      (value) => DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    )
                     .toList(),
                 onChanged: (newValue) {
                   setState(() {
@@ -78,9 +81,7 @@ class _HomeState extends State<Home> {
                   context.read<DBController>().getItems(category);
                 },
               ),
-              const SizedBox(
-                width: 10.0,
-              ),
+              const SizedBox(width: 10.0),
             ],
           ),
         ],
@@ -96,8 +97,8 @@ class _HomeState extends State<Home> {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   Text(
-                    "Empty",
-                    style: Theme.of(context).textTheme.headline1,
+                    'Empty',
+                    style: Theme.of(context).textTheme.displayLarge,
                   ),
                 ],
               ),
@@ -108,17 +109,20 @@ class _HomeState extends State<Home> {
                 Item item = itemList[index];
                 return InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
                         builder: (_) => AddItem(
-                              id: item.id,
-                              name: item.name,
-                              description: item.description,
-                              category: item.category,
-                              quantity: item.quantity,
-                              price: item.price,
-                              image: item.imageUrl,
-                              edit: true,
-                            )));
+                          id: item.id,
+                          name: item.name,
+                          description: item.description,
+                          category: item.category,
+                          quantity: item.quantity,
+                          price: item.price,
+                          image: item.imageUrl,
+                          edit: true,
+                        ),
+                      ),
+                    );
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -166,7 +170,7 @@ class _HomeState extends State<Home> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               item.name!,
-                              style: Theme.of(context).textTheme.headline1,
+                              style: Theme.of(context).textTheme.displayLarge,
                             ),
                           ),
                           Padding(
@@ -189,10 +193,13 @@ class _HomeState extends State<Home> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.edit),
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
+          Navigator.of(context).push(
+            MaterialPageRoute(
               builder: (_) => AddItem(
-                    edit: false,
-                  )));
+                edit: false,
+              ),
+            ),
+          );
         },
       ),
       drawer: Drawer(
@@ -205,48 +212,47 @@ class _HomeState extends State<Home> {
               ),
               child: Text(
                 'Inventory App',
-                style: Theme.of(context).textTheme.headline2,
+                style: Theme.of(context).textTheme.displayMedium,
               ),
             ),
             ListTile(
               title: Text(
                 'Delete All',
-                style: Theme.of(context).textTheme.headline3,
+                style: Theme.of(context).textTheme.displaySmall,
               ),
-              trailing: const Icon(Icons.delete_outline_outlined,color: Colors.black38),
+              trailing: const Icon(Icons.delete_outline_outlined, color: Colors.black38),
               onTap: () {
                 if (itemList.isEmpty) {
                   return;
                 }
                 showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                          title: const Text('Delete all item.'),
-                          content: const Text('Are you sure?'),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  DBController().deleteAll();
-                                  context
-                                      .read<DBController>()
-                                      .getItems(category);
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Ok')),
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Cancel')),
-                          ],
-                        ));
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: const Text('Delete all item.'),
+                    content: const Text('Are you sure?'),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            DBController().deleteAll();
+                            context.read<DBController>().getItems(category);
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Ok')),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Cancel')),
+                    ],
+                  ),
+                );
               },
             ),
             ListTile(
               title: Text(
                 'Theme',
-                style: Theme.of(context).textTheme.headline3,
+                style: Theme.of(context).textTheme.displaySmall,
               ),
               trailing: SizedBox(
                 width: 150,
@@ -255,7 +261,7 @@ class _HomeState extends State<Home> {
                   children: [
                     Text(
                       'light',
-                      style: Theme.of(context).textTheme.subtitle2,
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Switch(
                       value: isDark,
@@ -271,7 +277,7 @@ class _HomeState extends State<Home> {
                     ),
                     Text(
                       'dark',
-                      style: Theme.of(context).textTheme.subtitle2,
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ],
                 ),

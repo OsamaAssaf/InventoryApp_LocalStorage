@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:inventoryapp/modules/item.dart';
+
 import 'package:sqflite/sqflite.dart';
+
+import 'package:inventory_app/models/item.dart';
 
 class DBHelper {
   static Database? _db;
@@ -13,9 +15,9 @@ class DBHelper {
       return;
     }
     try {
-      String _path = await getDatabasesPath() + 'inventory.db';
+      String path = '${await getDatabasesPath()}inventory.db';
       _db = await openDatabase(
-        _path,
+        path,
         version: _version,
         onCreate: (Database db, int version) async {
           await db.execute('CREATE TABLE $_tableName '
@@ -45,8 +47,7 @@ class DBHelper {
 
   static update(Item item) async {
     try {
-      await _db!.update(_tableName, item.toJson(),
-          where: 'id = ?', whereArgs: [item.id]);
+      await _db!.update(_tableName, item.toJson(), where: 'id = ?', whereArgs: [item.id]);
     } catch (e) {
       return -1;
     }
@@ -57,8 +58,7 @@ class DBHelper {
       if (category == 'All') {
         return await _db!.query(_tableName);
       } else {
-        return await _db!
-            .query(_tableName, where: 'category = ?', whereArgs: [category]);
+        return await _db!.query(_tableName, where: 'category = ?', whereArgs: [category]);
       }
     } catch (e) {
       rethrow;

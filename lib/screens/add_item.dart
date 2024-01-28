@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:inventoryapp/controllers/database_controller.dart';
-import 'package:inventoryapp/modules/item.dart';
 import 'package:provider/provider.dart';
+
+import 'package:inventory_app/controllers/database_controller.dart';
+import 'package:inventory_app/models/item.dart';
 
 // ignore: must_be_immutable
 class AddItem extends StatefulWidget {
@@ -22,7 +24,7 @@ class AddItem extends StatefulWidget {
     required this.edit,
   }) : super(key: key);
 
-  int? id;
+  final int? id;
 
   String? name;
 
@@ -38,14 +40,11 @@ class AddItem extends StatefulWidget {
 
   final bool edit;
 
-
-
   @override
   State<AddItem> createState() => _AddItemState();
 }
 
 class _AddItemState extends State<AddItem> {
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final ImagePicker _picker = ImagePicker();
@@ -56,7 +55,6 @@ class _AddItemState extends State<AddItem> {
 
   @override
   Widget build(BuildContext context) {
-    print('build');
     widget.category ??= 'Electrical';
     return Scaffold(
       appBar: AppBar(
@@ -119,7 +117,6 @@ class _AddItemState extends State<AddItem> {
           ),
           padding: const EdgeInsets.all(20)),
       onPressed: () async {
-        print(widget.image);
         if (_formKey.currentState!.validate()) {
           if (widget.image == null) {
             Fluttertoast.showToast(
@@ -174,11 +171,10 @@ class _AddItemState extends State<AddItem> {
           decoration: InputDecoration(
             label: Text(
               type,
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             border: OutlineInputBorder(
-                borderSide: const BorderSide(width: 2),
-                borderRadius: BorderRadius.circular(15)),
+                borderSide: const BorderSide(width: 2), borderRadius: BorderRadius.circular(15)),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -212,7 +208,7 @@ class _AddItemState extends State<AddItem> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                Text('Category', style: Theme.of(context).textTheme.subtitle1),
+                Text('Category', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(
                   width: 10.0,
                 ),
@@ -221,13 +217,15 @@ class _AddItemState extends State<AddItem> {
                   iconEnabledColor: Colors.white,
                   value: widget.category,
                   items: categoryList
-                      .map((value) => DropdownMenuItem<String>(
-                            child: Text(
-                              value,
-                              style: Theme.of(context).textTheme.subtitle2,
-                            ),
-                            value: value,
-                          ))
+                      .map(
+                        (value) => DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      )
                       .toList(),
                   onChanged: (newValue) {
                     setState(() {
@@ -259,11 +257,10 @@ class _AddItemState extends State<AddItem> {
             decoration: InputDecoration(
               label: Text(
                 type,
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               border: OutlineInputBorder(
-                  borderSide: const BorderSide(width: 2),
-                  borderRadius: BorderRadius.circular(15)),
+                  borderSide: const BorderSide(width: 2), borderRadius: BorderRadius.circular(15)),
               suffix: type == 'Price'
                   ? const Text('\$')
                   : Container(
@@ -319,14 +316,12 @@ class _AddItemState extends State<AddItem> {
                 ),
               ),
               onTap: () async {
-                final XFile? photo =
-                    await _picker.pickImage(source: ImageSource.camera);
+                final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
                 if (photo == null) {
                   return;
                 }
                 setState(() {
-                  widget.image =
-                      base64Encode(File(photo.path).readAsBytesSync());
+                  widget.image = base64Encode(File(photo.path).readAsBytesSync());
                 });
               },
             ),
@@ -346,17 +341,14 @@ class _AddItemState extends State<AddItem> {
                 ),
               ),
               onTap: () async {
-                final XFile? photo =
-                    await _picker.pickImage(source: ImageSource.gallery);
+                final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
                 if (photo == null) {
                   return;
                 }
 
                 setState(() {
-                  widget.image =
-                      base64Encode(File(photo.path).readAsBytesSync());
+                  widget.image = base64Encode(File(photo.path).readAsBytesSync());
                 });
-                print(widget.image);
               },
             ),
           ],

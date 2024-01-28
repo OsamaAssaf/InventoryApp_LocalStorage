@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:inventoryapp/database/db_helper.dart';
-import 'package:inventoryapp/modules/item.dart';
+
+import 'package:inventory_app/database/db_helper.dart';
+import 'package:inventory_app/models/item.dart';
 
 class DBController with ChangeNotifier {
   List<Item> list = [];
@@ -9,21 +10,21 @@ class DBController with ChangeNotifier {
     return await DBHelper.insert(item);
   }
 
-  updateItem(Item item) async {
-    return await DBHelper.update(item);
+  Future<void> updateItem(Item item) async {
+    await DBHelper.update(item);
   }
 
-  getItems(String category) async {
+  Future<void> getItems(String category) async {
     final List<Map<String, Object?>> data = await DBHelper.query(category);
     list = data.map((e) => Item.fromJson(e)).toList();
     notifyListeners();
   }
 
-  deleteAll() async {
+  Future<void> deleteAll() async {
     await DBHelper.deleteAll();
   }
 
-  delete(int id) async {
+  Future<void> delete(int id) async {
     await DBHelper.delete(id);
   }
 }
